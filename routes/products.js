@@ -154,8 +154,8 @@ router.post("/:id/orders", async function (req, res, next) {
     console.log(orderofproduct);
 
     res.json({
-      status: 201,
-      message: "Create Success",
+      status: 200,
+      message: "Success",
       data: orderofproduct,
     });
   } catch (error) {
