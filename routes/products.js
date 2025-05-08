@@ -9,7 +9,7 @@ router.get("/", async function (req, res, next) {
   res.json({
     status: 200,
     message: "Success",
-    data: products
+    data: products,
   });
 });
 
@@ -45,7 +45,7 @@ router.post("/", async function (req, res, next) {
   if (existingProduct) {
     return res.status(400).json({
       status: 400,
-      message: "Namemenu already exists"
+      message: "Namemenu already exists",
     });
   }
 
@@ -54,7 +54,7 @@ router.post("/", async function (req, res, next) {
   res.status(201).json({
     status: 201,
     message: "Success",
-    data: products
+    data: products,
   });
 });
 
@@ -95,7 +95,6 @@ router.delete("/:id", async function (req, res, next) {
   });
 });
 
-
 //UserProductNewOrder
 router.get("/:id/orders", async function (req, res, next) {
   try {
@@ -104,11 +103,11 @@ router.get("/:id/orders", async function (req, res, next) {
       .find({ productid: product })
       .populate("productid", "namemenu price");
 
-      res.json({
-        status: 200,
-        message: "Success",
-        data: orderproduct
-      });
+    res.json({
+      status: 200,
+      message: "Success",
+      data: orderproduct,
+    });
   } catch (error) {
     next(error);
   }
@@ -121,7 +120,6 @@ router.post("/:id/orders", async function (req, res, next) {
   const product_id = await product.findById(productID);
 
   try {
-
     if (!quantity || quantity <= 0) {
       return res.status(400).json({ status: 400, message: "Invalid Quantity" });
     }
@@ -135,16 +133,17 @@ router.post("/:id/orders", async function (req, res, next) {
     if (product_id.stock < quantity) {
       return res
         .status(400)
-        .json({ status: 400, message: `Quantity is not enough to meet demand Remaining quantity ${product_id.stock}` });
+        .json({
+          status: 400,
+          message: `Quantity is not enough to meet demand Remaining quantity ${product_id.stock}`,
+        });
     }
-
-    
 
     let orderofproduct = new orderuser({
       userid,
       productid: product_id,
       totalprice: quantity * product_id.price,
-      quantity
+      quantity,
     });
 
     product_id.stock -= quantity;
@@ -153,7 +152,7 @@ router.post("/:id/orders", async function (req, res, next) {
     await orderofproduct.save();
 
     console.log(orderofproduct);
-    
+
     res.json({
       status: 201,
       message: "Create Success",
@@ -161,7 +160,7 @@ router.post("/:id/orders", async function (req, res, next) {
     });
   } catch (error) {
     console.log(error);
-    
+
     res.status(500).send(error);
   }
 });
