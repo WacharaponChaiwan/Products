@@ -2,9 +2,12 @@ var express = require("express");
 var router = express.Router();
 const product = require("../model/product.model");
 const orderuser = require("../model/orderuser.model");
+const authorToken = require("../middleware/token.middleware");
 
-router.get("/", async function (req, res, next) {
+router.get("/", authorToken, async function (req, res, next) {
   let products = await product.find({});
+
+
 
   res.json({
     status: 200,
@@ -13,12 +16,15 @@ router.get("/", async function (req, res, next) {
   });
 });
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:id", authorToken, async function (req, res, next) {
   let products = await product.findById(req.params.id);
   if (!products) {
-    return res.send("Not found");
+    return res.status(404).json({
+      status: 404,
+      message: "Menu not found",
+    });
   }
-  res.json({
+  res.status(200).json({
     status: 200,
     message: "Get Success",
     data: {
@@ -30,7 +36,7 @@ router.get("/:id", async function (req, res, next) {
   });
 });
 
-router.post("/", async function (req, res, next) {
+router.post("/", authorToken, async function (req, res, next) {
   let { namemenu, price, stock, Category } = req.body;
 
   const existingProduct = await product.findOne({ namemenu: namemenu });
@@ -58,7 +64,7 @@ router.post("/", async function (req, res, next) {
   });
 });
 
-router.put("/:id", async function (req, res, next) {
+router.put("/:id", authorToken, async function (req, res, next) {
   let { namemenu, price, stock, Category } = req.body;
   let { id } = req.params;
 
@@ -84,7 +90,7 @@ router.put("/:id", async function (req, res, next) {
   });
 });
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", authorToken, async function (req, res, next) {
   let { id } = req.params;
 
   let products = await product.findByIdAndDelete(id);
@@ -96,7 +102,7 @@ router.delete("/:id", async function (req, res, next) {
 });
 
 //UserProductNewOrder
-router.get("/:id/orders", async function (req, res, next) {
+router.get("/:id/orders", authorToken, async function (req, res, next) {
   try {
     const product = req.params.id;
     const orderproduct = await orderuser
@@ -113,7 +119,7 @@ router.get("/:id/orders", async function (req, res, next) {
   }
 });
 
-router.post("/:id/orders", async function (req, res, next) {
+router.post("/:id/orders", authorToken, async function (req, res, next) {
   const productID = req.params.id;
   const { quantity, userid } = req.body;
 
@@ -131,12 +137,10 @@ router.post("/:id/orders", async function (req, res, next) {
     }
 
     if (product_id.stock < quantity) {
-      return res
-        .status(400)
-        .json({
-          status: 400,
-          message: `Quantity is not enough to meet demand Remaining quantity ${product_id.stock}`,
-        });
+      return res.status(400).json({
+        status: 400,
+        message: `Quantity is not enough to meet demand Remaining quantity ${product_id.stock}`,
+      });
     }
 
     let orderofproduct = new orderuser({

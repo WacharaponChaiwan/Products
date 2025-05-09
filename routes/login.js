@@ -3,6 +3,7 @@ var router = express.Router();
 const users = require("../model/user.model");
 const jwt = require('jsonwebtoken')
 
+
 const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '1h';
 
@@ -18,6 +19,13 @@ router.post("/", async function (req, res, next) {
         status: 400,
         message: "pls register",
         data: {},
+      });
+    }
+
+    if (user.approve != true) {
+      return res.status(401).json({
+        status: 401,
+        message: "user not approve",
       });
     }
 
