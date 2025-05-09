@@ -11,7 +11,7 @@ router.post("/", async function (req, res, next) {
     if (existingUser) {
       return res
         .status(400)
-        .json({ status: 400, message: "Username already exists" });
+        .json({ status: 400, message: "Username already exists", data: null });
     }
 
     let user = new users({

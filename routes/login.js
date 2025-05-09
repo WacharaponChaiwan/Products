@@ -26,6 +26,7 @@ router.post("/", async function (req, res, next) {
       return res.status(401).json({
         status: 401,
         message: "user not approve",
+        data: null,
       });
     }
 
@@ -35,7 +36,7 @@ router.post("/", async function (req, res, next) {
         return res.status(401).json({
           status: 401,
           message: "Password is not Macth",
-          data: {},
+          data: null,
         });
     }
 
@@ -56,7 +57,11 @@ router.post("/", async function (req, res, next) {
       },
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({
+      status: 500,
+      message: "Login fail",
+      data: null
+    });
   }
 });
 

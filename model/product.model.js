@@ -5,7 +5,7 @@ const productSchema = new Schema({
     namemenu: {type: String , unique: true},
     price: {type: Number},
     stock: {type: Number , min: 0},
-    Category: {type: String , unique: true}
+    Category: {type: String }
 
 }, {
     timestamps: true

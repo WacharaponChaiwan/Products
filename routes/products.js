@@ -50,6 +50,7 @@ router.post("/", authorToken, async function (req, res, next) {
     return res.status(400).json({
       status: 400,
       message: "Namemenu already exists",
+      data: null,
     });
   }
 
@@ -73,7 +74,7 @@ router.put("/:id", authorToken, async function (req, res, next) {
   );
 
   if (!products) {
-    return res.status(404).json({ message: "Product not Found" });
+    return res.status(404).json({ message: "Product not Found" , data: null });
   }
 
   res.json({
@@ -98,6 +99,7 @@ router.delete("/:id", authorToken, async function (req, res, next) {
       return res.status(404).json({
         status: 404,
         message: "Product not found",
+        data: null,
       });
     }
 
@@ -143,19 +145,20 @@ router.post("/:id/orders", authorToken, async function (req, res, next) {
     
 
     if (!quantity || quantity <= 0) {
-      return res.status(400).json({ status: 400, message: "Invalid Quantity" });
+      return res.status(400).json({ status: 400, message: "Invalid Quantity",data: null, });
     }
 
     if (!product_id) {
       return res
         .status(400)
-        .json({ status: 400, message: "Invalid ProductID" });
+        .json({ status: 400, message: "Invalid ProductID" , data: null,});
     }
 
     if (product_id.stock < quantity) {
       return res.status(400).json({
         status: 400,
         message: `Quantity is not enough to meet demand Remaining quantity ${product_id.stock}`,
+        data: null,
       });
     }
 

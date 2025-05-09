@@ -41,6 +41,7 @@ module.exports = (req, res, next) => {
     return res.status(401).json({
       status: 401,
       message: "Unauthorized or invalid token",
+      data: null,
     });
   }
 };
