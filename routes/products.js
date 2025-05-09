@@ -7,8 +7,6 @@ const authorToken = require("../middleware/token.middleware");
 router.get("/", authorToken, async function (req, res, next) {
   let products = await product.find({});
 
-
-
   res.json({
     status: 200,
     message: "Success",
@@ -91,14 +89,30 @@ router.put("/:id", authorToken, async function (req, res, next) {
 });
 
 router.delete("/:id", authorToken, async function (req, res, next) {
-  let { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  let products = await product.findByIdAndDelete(id);
+    const deletedProduct = await product.findByIdAndDelete(id);
 
-  res.json({
-    status: 200,
-    message: "Delete Success",
-  });
+    if (!deletedProduct) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Delete Success",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
 });
 
 //UserProductNewOrder
@@ -120,17 +134,19 @@ router.get("/:id/orders", authorToken, async function (req, res, next) {
 });
 
 router.post("/:id/orders", authorToken, async function (req, res, next) {
-  const productID = req.params.id;
-  const { quantity, userid } = req.body;
-
-  const product_id = await product.findById(productID);
-
   try {
+    const productID = req.params.id;
+    const { quantity } = req.body;
+    const userid = req.user?.id;
+
+    const product_id = await product.findById(productID);
+    
+
     if (!quantity || quantity <= 0) {
       return res.status(400).json({ status: 400, message: "Invalid Quantity" });
     }
 
-    if (!productID) {
+    if (!product_id) {
       return res
         .status(400)
         .json({ status: 400, message: "Invalid ProductID" });
